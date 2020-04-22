@@ -24,7 +24,8 @@ setup(
     packages=find_namespace_packages(),
     python_requires='>=3.6',
     install_requires=[
-        'pyjwt'
+        'pyjwt',
+        'pandas'
         # 'vantage6-client'
     ],
     extras_require={

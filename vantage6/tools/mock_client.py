@@ -1,4 +1,6 @@
 import json
+import pandas
+
 from importlib import import_module
 
 
@@ -7,9 +9,13 @@ class ClientMockProtocol:
     def __init__(self, datasets, module):
         """
         """
-        # TODO read csvs
         self.n = len(datasets)
-        self.datasets = datasets
+        self.datasets = []
+        for dataset in datasets:
+            self.datasets.append(
+                pandas.read_csv(dataset)
+            )
+
         self.lib = import_module(module)
         self.tasks = []
 
