@@ -4,7 +4,9 @@
 </h1>
 
 <h3 align=center> A privacy preserving federated learning solution</h3>
+
 --------------------
+
 # vantage6-toolkit
 This repository is part of the [vantage6](https://vantage6.ai) solution. Vantage6 allowes to execute computations on federated datasets. This repository contains tools for algorithm development. It contains a `docker_wrapper` wrapper method which handles reading the database, input, token and writing the output. All methods that are no master method should be prefixed with `RPC_` and must be methods attached to an installed module. You can use [v6-boilerplate-py](https://github.com/iknl/v6-boilerplate-py) as a starting point for your algorithm. This package contains also a `MockClient` to test your algorithms locally.
 
