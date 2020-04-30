@@ -1,4 +1,5 @@
 import jwt
+import pickle
 
 from vantage6.client import ClientBaseProtocol
 
@@ -84,12 +85,15 @@ class ClientContainerProtocol(ClientBaseProtocol):
                 execute this task
         """
         self.log.debug(f"create new task for {organization_ids}")
+
+        serialized_input = pickle.dumps(input_)
+
         return self.post_task(
             name="subtask",
             description=f"task from container on node_id={self.host_node_id}",
             collaboration_id=self.collaboration_id,
             organization_ids=organization_ids,
-            input_=input_,
+            input_=serialized_input,
             image=self.image
         )
 
