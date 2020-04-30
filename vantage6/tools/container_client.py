@@ -86,8 +86,6 @@ class ClientContainerProtocol(ClientBaseProtocol):
         """
         self.log.debug(f"create new task for {organization_ids}")
 
-        serialized_input = pickle.dumps(input_)
-
         return self.post_task(
             name="subtask",
             description=f"task from container on node_id={self.host_node_id}",
@@ -133,12 +131,15 @@ class ClientContainerProtocol(ClientBaseProtocol):
                 task should run
         """
         self.log.debug("post task without encryption (is handled by proxy)")
+
+        serialized_input = pickle.dumps(input_)
+
         organization_json_list = []
         for org_id in organization_ids:
             organization_json_list.append(
                 {
                     "id": org_id,
-                    "input": input_
+                    "input": serialized_input
                 }
             )
 
