@@ -2,6 +2,7 @@ import os
 import json
 import csv
 import pickle
+import pandas
 
 from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
@@ -13,10 +14,9 @@ def docker_wrapper(module: str):
     # read input from the mounted inputfile.
     input_file = os.environ["INPUT_FILE"]
     info(f"Reading input file {input_file}")
-    with open(input_file) as fp:
-        input_data = json.loads(fp.read())
 
-    unserialized_data = pickle.loads(input_data)
+    with open(input_file, "rb") as fp:
+        input_data = pickle.load(fp)
 
     # all containers receive a token, however this is usually only
     # used by the master method. But can be used by regular containers also
@@ -28,16 +28,17 @@ def docker_wrapper(module: str):
 
     data_file = os.environ["DATABASE_URI"]
     info(f"Using '{data_file}' as database")
-    with open(data_file, "r") as fp:
-        data = csv.reader(fp)
+    # with open(data_file, "r") as fp:
+    data = pandas.read_csv(data_file)
+        # data = csv.reader(fp)
 
     # make the actual call to the method/function
     info("Dispatching ...")
-    output = dispact_rpc(data, unserialized_data, module, token)
+    output = dispact_rpc(data, input_data, module, token)
 
     # write output from the method to mounted output file. Which will be
     # transfered back to the server by the node-instance.
     output_file = os.environ["OUTPUT_FILE"]
     info(f"Writing output to {output_file}")
-    with open(output_file, 'w') as fp:
-        fp.write(json.dumps(output))
+    with open(output_file, 'wb') as fp:
+        fp.write(pickle.dumps(output))

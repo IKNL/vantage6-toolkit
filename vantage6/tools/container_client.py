@@ -1,6 +1,7 @@
 import jwt
 import pickle
 
+from vantage6.common import bytes_to_base64s, base64s_to_bytes
 from vantage6.client import ClientBaseProtocol
 
 
@@ -64,9 +65,15 @@ class ClientContainerProtocol(ClientBaseProtocol):
             :param task_id: id of the task from which you want to obtain
                 the results
         """
-        return self.request(
+        results = self.request(
             f"task/{task_id}/result"
         )
+
+        # self.log.debug(results[0].get("result"))
+        # self.log.debug(base64s_to_bytes(results[0].get("result")))
+        res = [pickle.loads(base64s_to_bytes(result.get("result"))) for result in results]
+        # self.log.debug(res)
+        return res
 
     def get_task(self, task_id: int):
         return self.request(
@@ -91,7 +98,7 @@ class ClientContainerProtocol(ClientBaseProtocol):
             description=f"task from container on node_id={self.host_node_id}",
             collaboration_id=self.collaboration_id,
             organization_ids=organization_ids,
-            input_=serialized_input,
+            input_=input_,
             image=self.image
         )
 
@@ -132,7 +139,7 @@ class ClientContainerProtocol(ClientBaseProtocol):
         """
         self.log.debug("post task without encryption (is handled by proxy)")
 
-        serialized_input = pickle.dumps(input_)
+        serialized_input = bytes_to_base64s(pickle.dumps(input_))
 
         organization_json_list = []
         for org_id in organization_ids:
@@ -147,7 +154,6 @@ class ClientContainerProtocol(ClientBaseProtocol):
             "name": name,
             "image": image,
             "collaboration_id": collaboration_id,
-            "input": input_,
             "description": description,
             "organizations": organization_json_list
         })
