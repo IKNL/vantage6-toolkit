@@ -2,10 +2,10 @@ import jwt
 import pickle
 
 from vantage6.common import bytes_to_base64s, base64s_to_bytes
-from vantage6.client import ClientBaseProtocol
+from vantage6.client import ClientBase
 
 
-class ClientContainerProtocol(ClientBaseProtocol):
+class ContainerClient(ClientBase):
     """ Container interface to the local proxy server (central server).
 
         A algorithm container (should) never communicate directly to the
