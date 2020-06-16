@@ -1,5 +1,6 @@
 import json
 import pandas
+import pickle
 
 from importlib import import_module
 
@@ -47,7 +48,7 @@ class ClientMockProtocol:
 
             idx = 999  # we dont need this now
             results.append(
-                {"id": idx, "result": json.dumps(result)}
+                {"id": idx, "result": pickle.dumps(result)}
             )
 
         id_ = len(self.tasks)
@@ -66,7 +67,13 @@ class ClientMockProtocol:
         """
         """
         task = self.tasks[task_id]
-        return task.get("results")
+        results = []
+        for result in task.get("results"):
+            print(result)
+            result["result"] = pickle.loads(result.get("result"))
+            results.append(result)
+
+        return results
 
     def get_organizations_in_my_collaboration(self):
 
