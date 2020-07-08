@@ -2,7 +2,7 @@ import os
 import importlib
 import jwt
 
-from vantage6.tools.container_client import ClientContainerProtocol
+from vantage6.tools.container_client import ContainerClient
 from vantage6.tools.util import info, warn
 
 
@@ -25,11 +25,11 @@ def dispact_rpc(data, input_data, module, token):
         api_path = os.environ["API_PATH"]
 
         # init Docker Client
-        client = ClientContainerProtocol(token=token, host=host, port=port,
+        client = ContainerClient(token=token, host=host, port=port,
                                          path=api_path)
 
         # read JWT token, to log te collaboration id. The
-        # ClientContainerProtocol automatically sets the collaboration_id
+        # ContainerClient automatically sets the collaboration_id
 
         claims = jwt.decode(token, verify=False)
         id_ = claims["identity"]["collaboration_id"]
