@@ -157,3 +157,5 @@ class ContainerClient(ClientBase):
             "description": description,
             "organizations": organization_json_list
         })
+
+ContainerClientProtocol = ContainerClient
