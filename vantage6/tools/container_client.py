@@ -114,8 +114,8 @@ class ContainerClient(ClientBase):
             f"collaboration/{self.collaboration_id}/organization")
         return organizations
 
-    def post_task(self, name:str, image:str, collaboration_id:int,
-        input_:str='', description='', organization_ids:list=[]) -> dict:
+    def post_task(self, name: str, image: str, collaboration_id: int,
+                  input_: str = '', description='', organization_ids: list = []) -> dict:
         """ Post a new task at the central server.
 
             ! To create a new task from the algorithm container you
@@ -158,4 +158,5 @@ class ContainerClient(ClientBase):
             "organizations": organization_json_list
         })
 
-ContainerClientProtocol = ContainerClient
+
+ClientContainerProtocol = ContainerClient
