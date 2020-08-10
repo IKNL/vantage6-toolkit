@@ -1,7 +1,6 @@
 import os
-import json
-import csv
 import pickle
+
 import pandas
 
 from vantage6.tools.dispatch_rpc import dispact_rpc
@@ -30,7 +29,6 @@ def docker_wrapper(module: str):
     info(f"Using '{data_file}' as database")
     # with open(data_file, "r") as fp:
     data = pandas.read_csv(data_file)
-        # data = csv.reader(fp)
 
     # make the actual call to the method/function
     info("Dispatching ...")
@@ -46,7 +44,6 @@ def docker_wrapper(module: str):
 
 def _read_formatted(file):
     data_format = _read_data_format(file)
-
 
 
 def _read_data_format(file):
