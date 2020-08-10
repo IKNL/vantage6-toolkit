@@ -30,6 +30,7 @@ setup(
     ],
     extras_require={
     },
+    tests_require=['pytest'],
     package_data={
         'vantage6.tools': [
             'VERSION'
