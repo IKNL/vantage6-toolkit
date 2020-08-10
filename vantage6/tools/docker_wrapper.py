@@ -5,6 +5,10 @@ import pandas
 
 from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
+from . import deserialization
+from .exceptions import DeserializationException
+
+_DATA_FORMAT_SEPARATOR = '.'
 
 
 def docker_wrapper(module: str):
@@ -14,8 +18,7 @@ def docker_wrapper(module: str):
     input_file = os.environ["INPUT_FILE"]
     info(f"Reading input file {input_file}")
 
-    with open(input_file, "rb") as fp:
-        input_data = pickle.load(fp)
+    input_data = _load_data(input_file)
 
     # all containers receive a token, however this is usually only
     # used by the master method. But can be used by regular containers also
@@ -42,8 +45,27 @@ def docker_wrapper(module: str):
         fp.write(pickle.dumps(output))
 
 
+def _load_data(input_file):
+    """
+    Try to read the specified data format and deserialize the rest of the stream accordingly. If this fails, assume
+    the data format is pickle.
+
+    :param input_file:
+    :return:
+    """
+    with open(input_file, "rb") as fp:
+        try:
+            input_data = _read_formatted(fp)
+        except DeserializationException:
+            info('No data format specified. Assuming input data is pickle format')
+            fp.seek(0)
+            input_data = pickle.load(fp)
+    return input_data
+
+
 def _read_formatted(file):
-    data_format = _read_data_format(file)
+    data_format = list(_read_data_format(file))
+    return deserialization.deserialize(file, data_format)
 
 
 def _read_data_format(file):
@@ -57,22 +79,16 @@ def _read_data_format(file):
     """
 
     while True:
-        char = file.read(1).decode()
+        try:
+            char = file.read(1).decode()
+        except UnicodeDecodeError:
+            # We aren't reading a unicode string
+            raise DeserializationException('No data format specified')
 
-        if char == '.':
+        if char == _DATA_FORMAT_SEPARATOR:
             break
         else:
             yield char
 
     # The file didn't have a format prepended
-    raise ValueError
-
-
-def load_data(input_file):
-    with open(input_file, "rb") as fp:
-        try:
-            input_data = read_formatted(fp)
-        except:
-            fp.read()
-            input_data = pickle.load(fp)
-    return input_data
+    raise DeserializationException('No data format specified')
