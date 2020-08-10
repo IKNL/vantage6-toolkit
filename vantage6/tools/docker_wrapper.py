@@ -42,3 +42,40 @@ def docker_wrapper(module: str):
     info(f"Writing output to {output_file}")
     with open(output_file, 'wb') as fp:
         fp.write(pickle.dumps(output))
+
+
+def _read_formatted(file):
+    data_format = _read_data_format(file)
+
+
+
+def _read_data_format(file):
+    """
+    Try to read the prescribed data format. The data format should be specified as follows: DATA_FORMAT.ACTUAL_BYTES.
+    This function will attempt to read the string before the period. It will fail if the file is not in the right
+    format.
+
+    :param file: Input file received from vantage infrastructure.
+    :return:
+    """
+
+    while True:
+        char = file.read(1).decode()
+
+        if char == '.':
+            break
+        else:
+            yield char
+
+    # The file didn't have a format prepended
+    raise ValueError
+
+
+def load_data(input_file):
+    with open(input_file, "rb") as fp:
+        try:
+            input_data = read_formatted(fp)
+        except:
+            fp.read()
+            input_data = pickle.load(fp)
+    return input_data
