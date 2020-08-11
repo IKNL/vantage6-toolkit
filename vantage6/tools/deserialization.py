@@ -12,7 +12,7 @@ def deserialize(file, data_format):
     :return:
     """
     try:
-        return _deserializers[data_format](file)
+        return _deserializers[data_format.lower()](file)
     except KeyError as e:
         raise Exception(f'Deserialization of {data_format} has not been implemented.')
 

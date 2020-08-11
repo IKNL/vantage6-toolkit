@@ -7,8 +7,10 @@ from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
 from . import deserialization
 from .exceptions import DeserializationException
+from typing import BinaryIO
 
 _DATA_FORMAT_SEPARATOR = '.'
+_MAX_FORMAT_STRING_LENGTH = 10
 
 
 def docker_wrapper(module: str):
@@ -59,16 +61,19 @@ def _load_data(input_file):
         except DeserializationException:
             info('No data format specified. Assuming input data is pickle format')
             fp.seek(0)
-            input_data = pickle.load(fp)
+            try:
+                input_data = pickle.load(fp)
+            except pickle.UnpicklingError:
+                raise DeserializationException('Could not deserialize input')
     return input_data
 
 
-def _read_formatted(file):
-    data_format = list(_read_data_format(file))
+def _read_formatted(file: BinaryIO):
+    data_format = str.join('', list(_read_data_format(file)))
     return deserialization.deserialize(file, data_format)
 
 
-def _read_data_format(file):
+def _read_data_format(file: BinaryIO):
     """
     Try to read the prescribed data format. The data format should be specified as follows: DATA_FORMAT.ACTUAL_BYTES.
     This function will attempt to read the string before the period. It will fail if the file is not in the right
@@ -77,8 +82,9 @@ def _read_data_format(file):
     :param file: Input file received from vantage infrastructure.
     :return:
     """
+    success = False
 
-    while True:
+    for i in range(_MAX_FORMAT_STRING_LENGTH):
         try:
             char = file.read(1).decode()
         except UnicodeDecodeError:
@@ -86,9 +92,11 @@ def _read_data_format(file):
             raise DeserializationException('No data format specified')
 
         if char == _DATA_FORMAT_SEPARATOR:
+            success = True
             break
         else:
             yield char
 
-    # The file didn't have a format prepended
-    raise DeserializationException('No data format specified')
+    if not success:
+        # The file didn't have a format prepended
+        raise DeserializationException('No data format specified')

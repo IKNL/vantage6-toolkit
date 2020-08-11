@@ -1,15 +1,19 @@
+import json
 import pickle
 from unittest.mock import patch
 
 import pandas as pd
+from pytest import raises
 
 from vantage6.tools import docker_wrapper
-import pytest
+from vantage6.tools.exceptions import DeserializationException
 
 MODULE_NAME = 'algorithm_module'
 DATA = 'column1,column2\n1,2'
 TOKEN = 'This is a fake token'
 INPUT_PARAMETERS = {'method': 'hello_world'}
+JSON = 'json'
+SEPARATOR = '.'
 
 
 def test_old_pickle_input_wrapper(tmp_path):
@@ -17,6 +21,26 @@ def test_old_pickle_input_wrapper(tmp_path):
 
     with input_file.open('wb') as f:
         pickle.dump(INPUT_PARAMETERS, f)
+
+    run_docker_wrapper(tmp_path, input_file)
+
+
+def test_json_input_without_format_raises_deserializationexception(tmp_path):
+    input_file = tmp_path / 'input.json'
+
+    with input_file.open('wb') as f:
+        f.write(json.dumps(INPUT_PARAMETERS).encode())
+
+    with raises(DeserializationException):
+        run_docker_wrapper(tmp_path, input_file)
+
+
+def test_json_input_with_format_succeeds(tmp_path):
+    input_file = tmp_path / 'input.txt'
+
+    with input_file.open('wb') as f:
+        f.write(f'JSON{SEPARATOR}'.encode())
+        f.write(json.dumps(INPUT_PARAMETERS).encode())
 
     run_docker_wrapper(tmp_path, input_file)
 
