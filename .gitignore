@@ -1,5 +1,7 @@
 
 vantage6_toolkit.egg-info/
-
 vantage6/tools/__pycache__/
-.idea
+
+.eggs/
+.idea/
+venv/
