@@ -41,17 +41,17 @@ def serialize_to_json(data):
     info(f'Serializing type {type(data)} to json')
 
     if isinstance(data, pd.DataFrame) | isinstance(data, pd.Series):
-        return serialize_pandas(data)
+        return _serialize_pandas(data)
 
-    return default_serialization(data)
+    return _default_serialization(data)
 
 
-def default_serialization(data):
+def _default_serialization(data):
     info('Using default json serialization')
     return jsonpickle.encode(data, unpicklable=True).encode()
 
 
-def serialize_pandas(data):
+def _serialize_pandas(data):
     info('Running pandas json serialization')
     return data.to_json().encode()
 

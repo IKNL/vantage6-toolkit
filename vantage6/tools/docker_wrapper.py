@@ -46,7 +46,10 @@ def docker_wrapper(module: str):
     with open(output_file, 'wb') as fp:
         try:
             output_format = input_data['output_format']
+            # Indicate output format
             fp.write(output_format.encode() + b'.')
+
+            # Write actual data
             serialized = serialization.serialize(output, output_format)
             fp.write(serialized)
         except KeyError:
