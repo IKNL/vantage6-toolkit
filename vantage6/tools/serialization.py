@@ -1,3 +1,5 @@
+import pickle
+
 import jsonpickle
 import pandas as pd
 
@@ -36,7 +38,7 @@ def serializer(data_format):
 
 @serializer('json')
 def serialize_to_json(data):
-    info(f'Serializing type {type(data)}')
+    info(f'Serializing type {type(data)} to json')
 
     if isinstance(data, pd.DataFrame) | isinstance(data, pd.Series):
         return serialize_pandas(data)
@@ -45,10 +47,16 @@ def serialize_to_json(data):
 
 
 def default_serialization(data):
-    info('Using default serialization')
-    return jsonpickle.encode(data, unpicklable=True)
+    info('Using default json serialization')
+    return jsonpickle.encode(data, unpicklable=True).encode()
 
 
 def serialize_pandas(data):
-    info('Running pandas serialization')
-    return data.to_json()
+    info('Running pandas json serialization')
+    return data.to_json().encode()
+
+
+@serializer('pickle')
+def serialize_to_pickle(data):
+    info('Serializing to pickle')
+    return pickle.dumps(data)
