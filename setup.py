@@ -25,7 +25,8 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'pyjwt',
-        'pandas'
+        'pandas',
+        'jsonpickle'
         # 'vantage6-client'
     ],
     extras_require={
