@@ -1,10 +1,12 @@
 import json
 import pickle
 
+from vantage6.tools.data_format import DataFormat
+
 _deserializers = {}
 
 
-def deserialize(file, data_format):
+def deserialize(file, data_format: DataFormat):
     """
     Lookup data_format in deserializer mapping and return the associated
     :param file:
@@ -12,7 +14,7 @@ def deserialize(file, data_format):
     :return:
     """
     try:
-        return _deserializers[data_format.lower()](file)
+        return _deserializers[data_format](file)
     except KeyError as e:
         raise Exception(f'Deserialization of {data_format} has not been implemented.')
 
@@ -35,11 +37,11 @@ def deserializer(data_format):
     return decorator_deserializer
 
 
-@deserializer('json')
+@deserializer(DataFormat.JSON)
 def deserialize_json(file):
     return json.load(file)
 
 
-@deserializer('pickle')
+@deserializer(DataFormat.PICKLE)
 def deserialize_pickle(file):
     return pickle.load(file)

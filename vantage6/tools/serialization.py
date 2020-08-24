@@ -1,6 +1,8 @@
 import pickle
 
 import json
+from .data_format import DataFormat
+
 import pandas as pd
 
 from vantage6.tools.util import info
@@ -8,35 +10,35 @@ from vantage6.tools.util import info
 _serializers = {}
 
 
-def serialize(data, data_format):
+def serialize(data, data_format: DataFormat):
     """
     Look up serializer for `data_format` and use this to serialize `data`.
     :param data:
     :param data_format:
     :return:
     """
-    return _serializers[data_format.lower()](data)
+    return _serializers[data_format](data)
 
 
-def serializer(data_format):
+def serializer(data_format: DataFormat):
     """
-    Register function as deserializer by adding it to the `_deserializers` map with key `data_format`.
+    Register function as serializer by adding it to the `_serializers` map with key `data_format`.
 
     :param data_format:
     :return:
     """
 
     def decorator_serializer(func):
-        # Register deserialization function
+        # Register serialization function
         _serializers[data_format] = func
 
-        # Return function without modifications so it can also be run without retrieving it from `_deserializers`.
+        # Return function without modifications so it can also be run without retrieving it from `_serializers`.
         return func
 
     return decorator_serializer
 
 
-@serializer('json')
+@serializer(DataFormat.JSON)
 def serialize_to_json(data):
     info(f'Serializing type {type(data)} to json')
 
@@ -56,7 +58,7 @@ def _serialize_pandas(data):
     return data.to_json().encode()
 
 
-@serializer('pickle')
+@serializer(DataFormat.PICKLE)
 def serialize_to_pickle(data):
     info('Serializing to pickle')
     return pickle.dumps(data)

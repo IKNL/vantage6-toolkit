@@ -6,6 +6,7 @@ import pandas
 from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
 from . import deserialization, serialization
+from .data_format import DataFormat
 from .exceptions import DeserializationException
 from typing import BinaryIO
 
@@ -50,6 +51,7 @@ def docker_wrapper(module: str):
             fp.write(output_format.encode() + b'.')
 
             # Write actual data
+            output_format = DataFormat(output_format.lower())
             serialized = serialization.serialize(output, output_format)
             fp.write(serialized)
         except KeyError:
@@ -80,6 +82,7 @@ def _load_data(input_file):
 
 def _read_formatted(file: BinaryIO):
     data_format = str.join('', list(_read_data_format(file)))
+    data_format = DataFormat(data_format.lower())
     return deserialization.deserialize(file, data_format)
 
 

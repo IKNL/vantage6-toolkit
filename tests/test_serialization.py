@@ -5,6 +5,8 @@ from pytest import mark
 from vantage6.tools import serialization
 import pandas as pd
 
+from vantage6.tools.data_format import DataFormat
+
 JSON = 'json'
 
 
@@ -19,7 +21,7 @@ JSON = 'json'
     (pd.Series([1, 2, 3]), '{"0":1,"1":2,"2":3}')
 ])
 def test_json_serialization(data, target):
-    result = serialization.serialize(data, JSON)
+    result = serialization.serialize(data, DataFormat.JSON)
 
     assert target == result.decode()
 
@@ -30,13 +32,13 @@ def test_json_serialization(data, target):
     ([1, 2, 3]),
 ])
 def test_pickle_serialization(data):
-    pickled = serialization.serialize(data, 'pickle')
+    pickled = serialization.serialize(data, DataFormat.PICKLE)
 
     assert data == pickle.loads(pickled)
 
 
 def test_pickle_serialization_pandas():
     data = pd.DataFrame([1, 2, 3])
-    pickled = serialization.serialize(data, 'pickle')
+    pickled = serialization.serialize(data, DataFormat.PICKLE)
 
     pd.testing.assert_frame_equal(data, pickle.loads(pickled))
