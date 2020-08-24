@@ -1,3 +1,10 @@
+"""
+Docker Wrapper
+
+This module contains the `docker_wrapper` function for providing vantage6 algorithms with uniform input and output
+handling.
+"""
+
 import os
 import pickle
 
@@ -15,6 +22,36 @@ _MAX_FORMAT_STRING_LENGTH = 10
 
 
 def docker_wrapper(module: str):
+    """
+    Wrap an algorithm module to provide input and output handling for the vantage6 infrastructure.
+
+    Data is received in the form of files, whose location should be specified in the following environment variables:
+    - `INPUT_FILE`: input arguments for the algorithm
+    - `OUTPUT_FILE`: location where the results of the algorithm should be stored
+    - `TOKEN_FILE`: access token for the vantage6 server REST api
+    - `DATABASE_URI`: either a database endpoint or path to a csv file.
+
+    The wrapper is able to parse a number of input file formats. The available formats can be found in
+    `vantage6.tools.data_format.DataFormat`. When the input is not pickle (legacy), the format should be specified in
+    the first bytes of the input file, followed by a '.'.
+
+    It is also possible to specify the desired output format. This is done by including the parameter 'output_format' in
+    the input parameters. Again, the list of possible output formats can be found in
+    `vantage6.tools.data_format.DataFormat`.
+
+    It is still possible that output serialization will fail even if the specified format is listed in the DataFormat
+    enum. Algorithms can in principle return any python object, but not every serialization format will support
+    arbitrary python objects. When dealing with unsupported algorithm output, the user should use 'pickle' as output
+    format, which is the default.
+
+    The other serialization formats support the following algorithm output:
+    - built-in primitives (int, float, str, etc.)
+    - built-in collections (list, dict, tuple, etc.)
+    - pandas DataFrames
+
+    :param module: module that contains the vantage6 algorithms
+    :return:
+    """
     info(f"wrapper for {module}")
 
     # read input from the mounted inputfile.
