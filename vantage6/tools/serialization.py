@@ -1,6 +1,6 @@
 import pickle
 
-import jsonpickle
+import json
 import pandas as pd
 
 from vantage6.tools.util import info
@@ -48,7 +48,7 @@ def serialize_to_json(data):
 
 def _default_serialization(data):
     info('Using default json serialization')
-    return jsonpickle.encode(data, unpicklable=True).encode()
+    return json.dumps(data).encode()
 
 
 def _serialize_pandas(data):
