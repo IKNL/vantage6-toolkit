@@ -5,9 +5,9 @@ import pandas
 
 from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
-from . import deserialization, serialization
+from vantage6.tools import deserialization, serialization
 from .data_format import DataFormat
-from .exceptions import DeserializationException
+from vantage6.tools.exceptions import DeserializationException
 from typing import BinaryIO
 
 _DATA_FORMAT_SEPARATOR = '.'
@@ -45,8 +45,9 @@ def docker_wrapper(module: str):
     output_file = os.environ["OUTPUT_FILE"]
     info(f"Writing output to {output_file}")
     with open(output_file, 'wb') as fp:
-        try:
+        if 'output_format' in input_data:
             output_format = input_data['output_format']
+
             # Indicate output format
             fp.write(output_format.encode() + b'.')
 
@@ -54,7 +55,7 @@ def docker_wrapper(module: str):
             output_format = DataFormat(output_format.lower())
             serialized = serialization.serialize(output, output_format)
             fp.write(serialized)
-        except KeyError:
+        else:
             # No output format specified, use legacy method
             fp.write(pickle.dumps(output))
 
