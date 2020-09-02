@@ -70,8 +70,8 @@ class ClientMockProtocol:
         results = []
         for result in task.get("results"):
             print(result)
-            result["result"] = pickle.loads(result.get("result"))
-            results.append(result)
+            res = pickle.loads(result.get("result"))
+            results.append(res)
 
         return results
 
