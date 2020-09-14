@@ -6,7 +6,7 @@ import pandas
 from vantage6.tools.dispatch_rpc import dispact_rpc
 from vantage6.tools.util import info
 from vantage6.tools import deserialization, serialization
-from .data_format import DataFormat
+from vantage6.tools.data_format import DataFormat
 from vantage6.tools.exceptions import DeserializationException
 from typing import BinaryIO
 

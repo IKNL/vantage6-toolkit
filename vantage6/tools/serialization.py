@@ -1,7 +1,7 @@
 import pickle
 
 import json
-from .data_format import DataFormat
+from vantage6.tools.data_format import DataFormat
 
 import pandas as pd
 
