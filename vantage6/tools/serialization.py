@@ -13,6 +13,7 @@ _serializers = {}
 def serialize(data, data_format: DataFormat):
     """
     Look up serializer for `data_format` and use this to serialize `data`.
+
     :param data:
     :param data_format:
     :return:
@@ -23,6 +24,12 @@ def serialize(data, data_format: DataFormat):
 def serializer(data_format: DataFormat):
     """
     Register function as serializer by adding it to the `_serializers` map with key `data_format`.
+    This function should ideally support a multitude of python objects.
+
+    There are two ways to extend serialization functionality:
+
+    1. Create and register a new serialization function for a previously unsupported serialization format.
+    2. Implement support for additional objects within an existing serializer function.
 
     :param data_format:
     :return:

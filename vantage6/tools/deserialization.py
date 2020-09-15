@@ -8,7 +8,8 @@ _deserializers = {}
 
 def deserialize(file, data_format: DataFormat):
     """
-    Lookup data_format in deserializer mapping and return the associated
+    Lookup data_format in deserializer mapping and return the associated function.
+
     :param file:
     :param data_format:
     :return:
@@ -22,6 +23,9 @@ def deserialize(file, data_format: DataFormat):
 def deserializer(data_format):
     """
     Register function as deserializer by adding it to the `_deserializers` map with key `data_format`.
+
+    These functions should receive a file-like as input and provide the data as output in the format specified with the
+    decorator.
 
     :param data_format:
     :return:
